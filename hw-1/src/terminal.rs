@@ -5,9 +5,10 @@ use iced::{
     widget::{column, scrollable, text, text_input},
     Application, Command, Element, Length,
 };
+use std::{cell::RefCell, rc::Rc};
 
 pub struct Terminal {
-    session: Session,
+    session: Rc<RefCell<Session>>,
 
     content: String,
     command: String,
@@ -24,7 +25,10 @@ impl Application for Terminal {
     type Executor = executor::Default;
     type Message = Message;
     type Theme = Theme;
-    type Flags = Session;
+
+    // Rc<RefCell<_>> instead of &mut because Application::run
+    // requires 'static for some reason.
+    type Flags = Rc<RefCell<Session>>;
 
     fn title(&self) -> String {
         String::from("Terminal")
@@ -34,11 +38,10 @@ impl Application for Terminal {
         Theme::Dark
     }
 
-    fn new(session: Session) -> (Self, Command<Message>) {
+    fn new(session: Self::Flags) -> (Self, Command<Message>) {
         (
             Self {
                 session,
-
                 command: String::new(),
                 content: String::new(),
                 scroll_id: scrollable::Id::unique(),
@@ -55,6 +58,7 @@ impl Application for Terminal {
             Message::CommandSubmitted => {
                 let result = self
                     .session
+                    .borrow_mut()
                     .exec(&self.command)
                     .unwrap_or_else(|e| format!("{:?}", e));
 
