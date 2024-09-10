@@ -52,6 +52,15 @@ impl Directory {
             .and_then(|child| child.get_path(&path[1..]))
     }
 
+    pub fn get_total_filesize(&self) -> usize {
+        self.files.values().map(|file| file.size).sum::<usize>()
+            + self
+                .directories
+                .values()
+                .map(|dir| dir.get_total_filesize())
+                .sum::<usize>()
+    }
+
     fn get_or_create_path(&mut self, path: &[&str]) -> &mut Self {
         let part = match path.first() {
             Some(part) => *part,

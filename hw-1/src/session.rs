@@ -1,5 +1,5 @@
 use crate::{directory::Directory, history::HistoryRecord};
-use std::time::SystemTime;
+use std::{iter, time::SystemTime};
 
 #[derive(Debug)]
 pub struct Session {
@@ -37,6 +37,8 @@ impl Session {
         match command {
             "ls" => Ok(self.exec_ls()),
             "cd" => self.exec_cd(argument).map(|_| self.cwd.join("/") + "/"),
+            "history" => Ok(self.exec_history()),
+            "du" => Ok(self.exec_du()),
             _ => Err(CommandExecutionError::CommandNotFound),
         }
     }
@@ -84,5 +86,29 @@ impl Session {
         }
 
         Ok(())
+    }
+
+    fn exec_history(&self) -> String {
+        self.history
+            .iter()
+            .rev()
+            .take(500)
+            .rev()
+            .enumerate()
+            .map(|(index, elem)| format!("{0} {1}", index, elem.1))
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+
+    fn exec_du(&self) -> String {
+        let cwd = self.get_cwd();
+
+        cwd.directories
+            .iter()
+            .map(|(name, dir)| (name, dir.get_total_filesize()))
+            .map(|(name, size)| format!("{0} {1}/", size, name))
+            .chain(iter::once(format!("{} .", cwd.get_total_filesize())))
+            .collect::<Vec<_>>()
+            .join("\n")
     }
 }

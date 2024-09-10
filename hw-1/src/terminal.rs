@@ -3,7 +3,7 @@ use iced::{
     executor,
     theme::Theme,
     widget::{column, scrollable, text, text_input},
-    Application, Command, Element, Length,
+    window, Application, Command, Element, Length,
 };
 use std::{cell::RefCell, rc::Rc};
 
@@ -56,6 +56,10 @@ impl Application for Terminal {
                 self.command = cmd;
             }
             Message::CommandSubmitted => {
+                if self.command == "exit" {
+                    return window::close(window::Id::MAIN);
+                }
+
                 let result = self
                     .session
                     .borrow_mut()
