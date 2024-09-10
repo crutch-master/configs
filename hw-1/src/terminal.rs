@@ -53,7 +53,12 @@ impl Application for Terminal {
                 self.command = cmd;
             }
             Message::CommandSubmitted => {
-                self.content = format!("{0}\n{1}", self.content, self.command);
+                let result = self
+                    .session
+                    .exec(&self.command)
+                    .unwrap_or_else(|e| format!("{:?}", e));
+
+                self.content = format!("{0}\n{1}\n{2}", self.content, self.command, result);
                 self.command.clear();
 
                 return scrollable::snap_to(

@@ -1,4 +1,4 @@
-use std::{collections::HashMap, error, process::Command, rc::Rc};
+use std::{collections::HashMap, error, process::Command};
 
 #[derive(Debug, Clone)]
 pub struct File {
@@ -7,8 +7,8 @@ pub struct File {
 
 #[derive(Debug, Clone, Default)]
 pub struct Directory {
-    pub files: HashMap<Rc<str>, File>,
-    pub directories: HashMap<Rc<str>, Directory>,
+    pub files: HashMap<String, File>,
+    pub directories: HashMap<String, Directory>,
 }
 
 impl Directory {
@@ -42,28 +42,28 @@ impl Directory {
     }
 
     pub fn get_path(&self, path: &[&str]) -> Option<&Self> {
-        let part: Rc<str> = match path.first() {
-            Some(part) => (*part).into(),
+        let part = match path.first() {
+            Some(part) => *part,
             None => return Some(self),
         };
 
         self.directories
-            .get(&part)
+            .get(part)
             .and_then(|child| child.get_path(&path[1..]))
     }
 
     fn get_or_create_path(&mut self, path: &[&str]) -> &mut Self {
-        let part: Rc<str> = match path.first() {
-            Some(part) => (*part).into(),
+        let part = match path.first() {
+            Some(part) => *part,
             None => return self,
         };
 
-        if !self.directories.contains_key(&part) {
-            self.directories.insert(part.clone(), Self::default());
+        if !self.directories.contains_key(part) {
+            self.directories.insert(part.into(), Self::default());
         }
 
         self.directories
-            .get_mut(&part)
+            .get_mut(part)
             .unwrap()
             .get_or_create_path(&path[1..])
     }

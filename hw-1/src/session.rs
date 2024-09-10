@@ -3,48 +3,69 @@ use crate::directory::Directory;
 #[derive(Debug)]
 pub struct Session {
     root: Directory,
-    work_dir_stack: Vec<Directory>,
+    cwd: Vec<String>,
 }
 
 #[derive(Debug)]
-struct DirectoryNotFound;
+pub enum CommandExecutionError {
+    CommandNotFound,
+    DirectoryNotFound,
+}
 
 impl Session {
     pub fn new(root: Directory) -> Self {
-        Self {
-            root: root.clone(),
-            work_dir_stack: vec![root],
+        Self { root, cwd: vec![] }
+    }
+
+    pub fn exec(&mut self, command: &str) -> Result<String, CommandExecutionError> {
+        // TODO: Log the commands
+        let (command, argument) = command
+            .split_once(char::is_whitespace)
+            .unwrap_or((command, ""));
+
+        match command {
+            "ls" => Ok(self.exec_ls()),
+            "cd" => self.exec_cd(argument).map(|_| self.cwd.join("/") + "/"),
+            _ => Err(CommandExecutionError::CommandNotFound),
         }
     }
 
+    fn get_cwd(&self) -> &Directory {
+        self.root
+            .get_path(&self.cwd.iter().map(AsRef::as_ref).collect::<Vec<_>>())
+            .unwrap()
+    }
+
     fn exec_ls(&self) -> String {
-        let cwd = self.work_dir_stack.last().unwrap();
+        let cwd = self.get_cwd();
 
         cwd.files
             .keys()
-            .map(|key| key.to_string())
+            .map(ToString::to_string)
             .chain(cwd.directories.keys().map(|key| key.to_string() + "/"))
             .collect::<Vec<_>>()
             .join("\n")
     }
 
-    fn exec_cd(&mut self, path: &str) -> Result<(), DirectoryNotFound> {
+    fn exec_cd(&mut self, path: &str) -> Result<(), CommandExecutionError> {
         if path == "/" {
-            self.work_dir_stack = vec![self.root.clone()];
+            self.cwd = vec![];
         } else if path == ".." {
-            if self.work_dir_stack.len() <= 1 {
-                return Err(DirectoryNotFound {});
+            if self.cwd.is_empty() {
+                return Err(CommandExecutionError::DirectoryNotFound);
             }
 
-            self.work_dir_stack.pop();
+            self.cwd.pop();
         } else {
-            let cwd = self.work_dir_stack.last().unwrap();
+            let cwd = self.get_cwd();
+            let path = path.split("/").collect::<Vec<_>>();
 
-            self.work_dir_stack.push(
-                cwd.get_path(&path.split("/").collect::<Vec<_>>())
-                    .ok_or(DirectoryNotFound {})?
-                    .clone(),
-            );
+            let _ = cwd
+                .get_path(&path)
+                .ok_or(CommandExecutionError::DirectoryNotFound)?;
+
+            self.cwd
+                .append(&mut path.iter().map(ToString::to_string).collect::<Vec<_>>());
         }
 
         Ok(())
