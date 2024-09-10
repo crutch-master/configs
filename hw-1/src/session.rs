@@ -1,8 +1,5 @@
+use crate::{directory::Directory, history::HistoryRecord};
 use std::time::SystemTime;
-
-use crate::directory::Directory;
-
-type HistoryRecord = (u64, String);
 
 #[derive(Debug)]
 pub struct Session {
@@ -18,11 +15,11 @@ pub enum CommandExecutionError {
 }
 
 impl Session {
-    pub fn new(root: Directory) -> Self {
+    pub fn new(root: Directory, history: Vec<HistoryRecord>) -> Self {
         Self {
             root,
-            cwd: Vec::new(),
-            history: Vec::new(),
+            cwd: vec![],
+            history,
         }
     }
 
