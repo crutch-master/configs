@@ -1,11 +1,11 @@
 use std::{collections::HashMap, error, process::Command};
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct File {
     pub size: usize,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Default)]
 pub struct Directory {
     pub files: HashMap<String, File>,
     pub directories: HashMap<String, Directory>,
