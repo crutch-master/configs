@@ -2,7 +2,7 @@ use std::{collections::HashMap, error, process::Command};
 
 #[derive(Debug)]
 pub struct File {
-    pub size: usize,
+    pub size: u64,
 }
 
 #[derive(Debug, Default)]
@@ -52,16 +52,16 @@ impl Directory {
             .and_then(|child| child.get_path(&path[1..]))
     }
 
-    pub fn get_total_filesize(&self) -> usize {
-        self.files.values().map(|file| file.size).sum::<usize>()
+    pub fn get_total_filesize(&self) -> u64 {
+        self.files.values().map(|file| file.size).sum::<u64>()
             + self
                 .directories
                 .values()
                 .map(|dir| dir.get_total_filesize())
-                .sum::<usize>()
+                .sum::<u64>()
     }
 
-    fn get_or_create_path(&mut self, path: &[&str]) -> &mut Self {
+    pub fn get_or_create_path(&mut self, path: &[&str]) -> &mut Self {
         let part = match path.first() {
             Some(part) => *part,
             None => return self,
@@ -75,5 +75,55 @@ impl Directory {
             .get_mut(part)
             .unwrap()
             .get_or_create_path(&path[1..])
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn get_path() {
+        let directory = Directory {
+            files: HashMap::new(),
+            directories: HashMap::from([(
+                String::from("dir1"),
+                Directory {
+                    files: HashMap::new(),
+                    directories: HashMap::new(),
+                },
+            )]),
+        };
+
+        assert!(directory.get_path(&["dir1"]).is_some());
+    }
+
+    #[test]
+    fn get_total_size() {
+        let directory = Directory {
+            files: HashMap::from([(String::from("file1"), File { size: 13 })]),
+            directories: HashMap::from([(
+                String::from("dir"),
+                Directory {
+                    files: HashMap::from([(String::from("file2"), File { size: 14 })]),
+                    directories: HashMap::new(),
+                },
+            )]),
+        };
+
+        assert!(directory.get_total_filesize() == 27);
+    }
+
+    #[test]
+    fn get_or_create_path() {
+        let mut directory = Directory::default();
+        let _ = directory.get_or_create_path(&["a", "b"]);
+
+        {
+            let subdir = directory.get_or_create_path(&["a"]);
+            assert!(subdir.directories.keys().collect::<Vec<_>>()[0] == "b");
+        }
+
+        assert!(directory.directories.keys().collect::<Vec<_>>()[0] == "a");
     }
 }

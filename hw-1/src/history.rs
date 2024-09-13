@@ -25,7 +25,11 @@ pub fn load_history(path: &str) -> io::Result<Vec<HistoryRecord>> {
 }
 
 pub fn dump_history(path: &str, history: &[HistoryRecord]) -> io::Result<()> {
-    let mut file = OpenOptions::new().write(true).create(true).open(path)?;
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(path)?;
     let mut writer = BufWriter::new(&mut file);
     let mut csv_writer = Writer::from_writer(&mut writer);
 
