@@ -43,6 +43,17 @@ impl Session {
         }
     }
 
+    pub fn exec_script(&mut self, script: &str) -> String {
+        script
+            .split('\n')
+            .map(|cmd| match self.exec(cmd) {
+                Ok(res) => res,
+                Err(err) => format!("{:?}", err),
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+
     pub fn get_history(&self) -> Vec<HistoryRecord> {
         self.history.clone()
     }

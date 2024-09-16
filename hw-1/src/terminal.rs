@@ -28,7 +28,7 @@ impl Application for Terminal {
 
     // Rc<RefCell<_>> instead of &mut because Application::run
     // requires 'static for some reason.
-    type Flags = Rc<RefCell<Session>>;
+    type Flags = (String, Rc<RefCell<Session>>);
 
     fn title(&self) -> String {
         String::from("Terminal")
@@ -38,12 +38,12 @@ impl Application for Terminal {
         Theme::Dark
     }
 
-    fn new(session: Self::Flags) -> (Self, Command<Message>) {
+    fn new(flags: Self::Flags) -> (Self, Command<Message>) {
         (
             Self {
-                session,
+                session: flags.1,
                 command: String::new(),
-                content: String::new(),
+                content: flags.0,
                 scroll_id: scrollable::Id::unique(),
             },
             Command::none(),
