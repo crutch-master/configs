@@ -71,7 +71,7 @@ array[Package] of set of 1..5: dependencies = [
 
 array[Package] of var opt (1..100): install_order;
 
-constraint install_order[root] = 100;
+constraint occurs(install_order[root]);
 
 constraint forall(p in Package where occurs(install_order[p])) (
   forall(dep in dependencies[p]) (
