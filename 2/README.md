@@ -1,3 +1,23 @@
+# Задача 1
+
+![alt text](1.png)
+
+Напрямую можно склонировать GitHub-репозиторий с помощью команды:
+```bash
+git clone https://github.com/matplotlib/matplotlib
+```
+
+# Задача 2
+
+![alt text](2.png)
+
+Напрямую можно также склонировать с помощью команды:
+```bash
+git clone https://github.com/expressjs/express
+```
+
+# Задача 3
+
 # Задача 4
 
 ```mzn
@@ -89,3 +109,7 @@ output [
   endif | p in Package
 ];
 ```
+
+# Задача 6
+
+# Задача 7
