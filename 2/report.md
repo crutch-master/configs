@@ -1,11 +1,11 @@
 # Задача 4
 
-```minizinc
+```mzn
 include "alldifferent.mzn";
 
-array[0..5] of var 0..9: digits;
-var int: sumleft = sum (i in 0..2) (digits[i]);
-var int: sumright = sum (i in 3..5) (digits[i]);
+array[1..6] of var 0..9: digits;
+var int: sumleft = sum (i in 1..3) (digits[i]);
+var int: sumright = sum (i in 4..6) (digits[i]);
 
 constraint alldifferent(digits);
 constraint sumleft = sumright;
