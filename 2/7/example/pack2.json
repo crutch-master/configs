@@ -1,6 +1,4 @@
 {
   "name": "pack2",
-  "deps": [
-    ["pack4"]
-  ]
+  "deps": [["pack4"]]
 }
