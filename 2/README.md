@@ -1,6 +1,6 @@
 # Задача 1
 
-![alt text](1.png)
+![](1.png)
 
 Напрямую можно склонировать GitHub-репозиторий с помощью команды:
 ```bash
@@ -9,7 +9,7 @@ git clone https://github.com/matplotlib/matplotlib
 
 # Задача 2
 
-![alt text](2.png)
+![](2.png)
 
 Напрямую можно также склонировать с помощью команды:
 ```bash
@@ -17,6 +17,10 @@ git clone https://github.com/expressjs/express
 ```
 
 # Задача 3
+
+![](graph.png)
+
+Код для генерации `dot`-кода в файле `index.js`.
 
 # Задача 4
 
