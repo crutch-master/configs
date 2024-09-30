@@ -1,0 +1,8 @@
+{
+  "name": "deps-resolver",
+  "version": "0.0.1",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}
