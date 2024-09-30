@@ -133,7 +133,9 @@ enum Package = {
   target_1_0_0,
 };
 
-array[1..7] of set of Package: targets = [
+int: n = 7;
+
+array[1..n] of set of Package: targets = [
   % Deps of root 1.0.0
   1: { foo_1_1_0, foo_1_0_0 },
   2: { target_2_0_0 },
@@ -153,7 +155,7 @@ array[1..7] of set of Package: targets = [
 ];
 
 % set points to targets array
-array[Package] of set of 1..7: dependencies = [
+array[Package] of set of 1..n: dependencies = [
   root_1_0_0: { 1, 2 },
   foo_1_1_0: { 3, 4 },
   left_1_0_0: { 5 },
