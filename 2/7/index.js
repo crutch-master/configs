@@ -24,6 +24,8 @@ function solve(packages, targetName) {
     let installedChild = 0;
 
     for (const key in installOrderChild) {
+      if (key in installOrder) continue;
+
       installOrder[key] = installOrderChild[key] + installed;
       installedChild += 1;
     }
