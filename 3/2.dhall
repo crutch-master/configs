@@ -5,10 +5,10 @@ let List/drop =
       https://raw.githubusercontent.com/dhall-lang/dhall-lang/v23.0.0/Prelude/List/drop
 
 let List/index =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v23.0.0/Prelude/List/index.dhall
+      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v23.0.0/Prelude/List/index
 
 let Natural/enumerate =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v23.0.0/Prelude/Natural/enumerate.dhall
+      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v23.0.0/Prelude/Natural/enumerate
 
 let Range =
       \(n : Natural) ->
