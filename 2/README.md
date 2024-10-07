@@ -42,6 +42,8 @@ output [
 ];
 ```
 
+![](4.png)
+
 # Задача 5
 
 ```minizinc
@@ -113,6 +115,8 @@ output [
   endif | p in Package
 ];
 ```
+
+![](5.png)
 
 # Задача 6
 
@@ -189,6 +193,8 @@ output [
   endif | p in Package
 ];
 ```
+
+![](6.png)
 
 # Задача 7
 

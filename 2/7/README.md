@@ -10,5 +10,8 @@ node index example/pack1.json example/pack2.json example/pack3.json example/pack
 ```
 выведет:
 ```
-{ pack4: 2, pack2: 1, pack1: 3 }
+{ pack4: 0, pack2: 1, pack1: 2 }
 ```
+
+Результат работы:
+![](screen.png)
