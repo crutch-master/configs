@@ -1,14 +1,14 @@
 let List/map =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v23.0.0/Prelude/List/map
+      https://prelude.dhall-lang.org/v23.0.0/List/map
 
 let List/drop =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v23.0.0/Prelude/List/drop
+      https://prelude.dhall-lang.org/v23.0.0/List/drop
 
 let List/index =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v23.0.0/Prelude/List/index
+      https://prelude.dhall-lang.org/v23.0.0/List/index
 
 let Natural/enumerate =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v23.0.0/Prelude/Natural/enumerate
+      https://prelude.dhall-lang.org/v23.0.0/Natural/enumerate
 
 let Range =
       \(n : Natural) ->
