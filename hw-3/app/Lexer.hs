@@ -1,6 +1,6 @@
 module Lexer
-  ( LiteralValue,
-    Token,
+  ( LiteralValue (..),
+    Token (..),
     tokenize,
   )
 where
@@ -14,7 +14,7 @@ import Text.Regex.TDFA ((=~))
 data LiteralValue
   = String String
   | Number Integer
-  deriving (Show)
+  deriving (Show, Eq)
 
 data Token
   = Set
@@ -29,7 +29,7 @@ data Token
   | Comment String
   | Identifier String
   | Literal LiteralValue
-  deriving (Show)
+  deriving (Show, Eq)
 
 newtype Lexer = Lexer (String -> Maybe (Token, String))
 
