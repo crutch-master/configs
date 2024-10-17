@@ -18,6 +18,7 @@ data LiteralValue
 
 data Token
   = Set
+  | Equals
   | ArrayBegin
   | ArrayEnd
   | DictBegin
@@ -25,6 +26,10 @@ data Token
   | DictEnd
   | Delimiter
   | ExprBegin
+  | Add
+  | Subtract
+  | Multiply
+  | Print
   | ExprEnd
   | Comment String
   | Identifier String
@@ -34,15 +39,12 @@ data Token
 newtype Lexer = Lexer (String -> Maybe (Token, String))
 
 instance Semigroup Lexer where
-  (Lexer left) <> (Lexer right) =
-    Lexer
-      ( \text -> case left text of
-          Just res -> Just res
-          Nothing -> right text
-      )
+  (Lexer left) <> (Lexer right) = Lexer $ \text -> case left text of
+    Just res -> Just res
+    Nothing -> right text
 
 instance Monoid Lexer where
-  mempty = Lexer (const Nothing)
+  mempty = Lexer $ const Nothing
 
 splitOnce :: String -> String -> Maybe (String, String)
 splitOnce delim text = case stripPrefix delim text of
@@ -54,52 +56,41 @@ splitOnce delim text = case stripPrefix delim text of
       return (x : left, right)
 
 lexSimple :: String -> Token -> Lexer
-lexSimple prefix token =
-  Lexer (stripPrefix prefix >=> (\rest -> Just (token, rest)))
+lexSimple prefix token = Lexer $ stripPrefix prefix >=> (\rest -> Just (token, rest))
 
 lexComment :: Lexer
-lexComment =
-  Lexer
-    ( \text -> do
-        rest <- stripPrefix "#=" text
-        (comment, rest') <- splitOnce "=#" rest
-        return (Comment comment, rest')
-    )
+lexComment = Lexer $ \text -> do
+  rest <- stripPrefix "#=" text
+  (comment, rest') <- splitOnce "=#" rest
+  return (Comment comment, rest')
 
 lexIdentifier :: Lexer
-lexIdentifier =
-  Lexer
-    ( \text -> do
-        identifier <- case (text =~ "^[a-zA-Z][_a-zA-Z0-9]*" :: String) of
-          "" -> Nothing
-          str -> Just str
-        rest <- stripPrefix identifier text
-        return (Identifier identifier, rest)
-    )
+lexIdentifier = Lexer $ \text -> do
+  identifier <- case (text =~ "^[a-zA-Z][_a-zA-Z0-9]*" :: String) of
+    "" -> Nothing
+    str -> Just str
+
+  rest <- stripPrefix identifier text
+  return (Identifier identifier, rest)
 
 lexNumber :: Lexer
-lexNumber =
-  Lexer
-    ( \text -> do
-        let digits = takeWhile isDigit text
-        number <- readMaybe digits
-        rest <- stripPrefix digits text
-        return (Literal (Number number), rest)
-    )
+lexNumber = Lexer $ \text -> do
+  let digits = takeWhile isDigit text
+  number <- readMaybe digits
+  rest <- stripPrefix digits text
+  return (Literal (Number number), rest)
 
 lexString :: Lexer
-lexString =
-  Lexer
-    ( \text -> do
-        rest <- stripPrefix "\"" text
-        (string, rest') <- splitOnce "\"" rest
-        return (Literal (String string), rest')
-    )
+lexString = Lexer $ \text -> do
+  rest <- stripPrefix "\"" text
+  (string, rest') <- splitOnce "\"" rest
+  return (Literal (String string), rest')
 
 nextToken :: String -> Maybe (Token, String)
 Lexer nextToken =
   mconcat
     [ lexSimple "set" Set,
+      lexSimple "=" Equals,
       lexSimple "array(" ArrayBegin,
       lexSimple ")" ArrayEnd,
       lexSimple "{" DictBegin,
@@ -107,6 +98,10 @@ Lexer nextToken =
       lexSimple "}" DictEnd,
       lexSimple "," Delimiter,
       lexSimple "?[" ExprBegin,
+      lexSimple "+" Add,
+      lexSimple "-" Subtract,
+      lexSimple "*" Multiply,
+      lexSimple "print" Print,
       lexSimple "]" ExprEnd,
       lexComment,
       lexIdentifier,
