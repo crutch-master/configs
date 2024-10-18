@@ -1,8 +1,8 @@
 module Main where
 
 import Data.Maybe (fromMaybe)
-import Lexer
-import Parser
+import Lexer (tokenize)
+import Parser (parseConfig)
 
 config :: String
 config =
@@ -15,5 +15,4 @@ config =
 main :: IO ()
 main = do
   let tokens = fromMaybe [] $ tokenize config
-  let Parser parse = parseConfig
-  print $ parse tokens
+  print $ parseConfig tokens

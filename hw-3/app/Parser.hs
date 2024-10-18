@@ -1,7 +1,13 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE TupleSections #-}
 
-module Parser where
+module Parser
+  ( Value (..),
+    ConfigEntry (..),
+    Config,
+    parseConfig,
+  )
+where
 
 import Control.Monad (ap, liftM)
 import Data.Maybe (listToMaybe)
@@ -138,12 +144,18 @@ parseEntry =
         return $ Set (key, value)
     ]
 
-parseConfig :: Parser Config
-parseConfig = do
+parseConfig' :: Parser Config
+parseConfig' = do
   endOrEntry <- parseEither parseEnd parseEntry
 
   case endOrEntry of
     Left _ -> return []
     Right entry -> do
-      rest <- parseConfig
+      rest <- parseConfig'
       return $ entry : rest
+
+parseConfig :: [Lexer.Token] -> Maybe Config
+parseConfig tokens =
+  let Parser parse = parseConfig'
+      res = parse tokens
+   in fst <$> res
