@@ -84,7 +84,7 @@ write :: String -> Value -> Parser ()
 write key value = Parser $ \(Config entries logs) tokens ->
   Right
     ( (),
-      Config ((key, value) : entries) logs,
+      Config (entries <> [(key, value)]) logs,
       tokens
     )
 
@@ -97,7 +97,7 @@ addLog :: String -> Parser ()
 addLog entry = Parser $ \(Config entries logs) tokens ->
   Right
     ( (),
-      Config entries (entry : logs),
+      Config entries (logs <> [entry]),
       tokens
     )
 
