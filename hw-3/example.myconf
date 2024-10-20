@@ -1,0 +1,9 @@
+set a = 1
+set b = ?[1 a +]
+set c = ?[a b +]
+set d = array("this is a string")
+#= this is a comment =#
+set e = {
+  d: d,
+  inner: { e: 5 }
+}

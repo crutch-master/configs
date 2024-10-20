@@ -2,25 +2,26 @@ module Main where
 
 import Lexer (tokenize)
 import Parser (parseConfig)
+import System.Environment (getArgs)
+import System.Exit (exitFailure)
 import Xml (showConfig)
-
-config :: String
-config =
-  "\
-  \set asdf = 3\n\
-  \#= asdf asd aosjd adh \n\
-  \ sdasfsf =#\n\
-  \set asdf2 = ?[asdf 1 -]\n\
-  \set asdf3 = { asdf: ?[2 asdf print *] }"
 
 main :: IO ()
 main = do
-  tokens <- case tokenize config of
-    Right ok -> return ok
-    Left err -> print err >> return []
+  args <- getArgs
 
-  parsed <- case parseConfig tokens of
-    Right ok -> return ok
-    Left err -> print err >> return []
+  (src, target) <- case args of
+    [src, target] -> return (src, target)
+    _ -> putStrLn "expected two arguments" >> exitFailure
 
-  putStrLn $ showConfig parsed
+  text <- readFile src
+
+  tokens <- case tokenize text of
+    Right tokens -> return tokens
+    Left err -> putStrLn ("unable to tokenize:\n" <> show err) >> exitFailure
+
+  config <- case parseConfig tokens of
+    Right config -> return config
+    Left err -> putStrLn ("unable to parse:\n" <> show err) >> exitFailure
+
+  writeFile target $ showConfig config

@@ -1,0 +1,16 @@
+<config>
+  <a>1</a>
+  <b>2</b>
+  <c>3</c>
+  <d>
+    <entry>this is a string</entry>
+  </d>
+  <e>
+    <d>
+      <entry>this is a string</entry>
+    </d>
+    <inner>
+      <e>5</e>
+    </inner>
+  </e>
+</config>
