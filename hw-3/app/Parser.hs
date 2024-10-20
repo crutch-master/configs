@@ -5,7 +5,7 @@ module Parser
   ( Value (..),
     ParsingErrorDetails (..),
     ParsingError (..),
-    Config,
+    Config (..),
     parseConfig,
   )
 where
@@ -39,7 +39,7 @@ data ParsingErrorDetails
 
 data ParsingError = ParsingError {pos :: Integer, details :: ParsingErrorDetails} deriving (Show)
 
-type Config = [(String, Value)]
+data Config = Config [(String, Value)] [String]
 
 newtype Parser a = Parser (Config -> [Lexer.Token] -> Either ParsingError (a, Config, [Lexer.Token]))
 
@@ -81,12 +81,25 @@ parseEnd = Parser $ \entries -> \case
   tok : _ -> Left . ParsingError 0 $ UnexpectedToken "expected no token" tok
 
 write :: String -> Value -> Parser ()
-write key value = Parser $ \config tokens -> Right ((), (key, value) : config, tokens)
+write key value = Parser $ \(Config entries logs) tokens ->
+  Right
+    ( (),
+      Config ((key, value) : entries) logs,
+      tokens
+    )
 
 lookupValue :: String -> Parser Value
-lookupValue key = Parser $ \config tokens -> case lookup key config of
+lookupValue key = Parser $ \config@(Config entries _) tokens -> case lookup key entries of
   Just value -> Right (value, config, tokens)
   Nothing -> Left . ParsingError 0 $ KeyNotFound key
+
+addLog :: String -> Parser ()
+addLog entry = Parser $ \(Config entries logs) tokens ->
+  Right
+    ( (),
+      Config entries (entry : logs),
+      tokens
+    )
 
 parseSingleToken :: (Lexer.Token -> Either ParsingError a) -> Parser a
 parseSingleToken transform = Parser $ \entries tokens -> do
@@ -145,7 +158,9 @@ parseOperation =
     )
 
 performOperation :: Operation -> [Value] -> Parser [Value]
-performOperation Print (top : rest) = return (top : rest)
+performOperation Print (top : rest) = do
+  addLog $ show top
+  return (top : rest)
 performOperation op (right : left : rest) =
   case (left, right) of
     (Number l, Number r) -> case op of
@@ -230,5 +245,5 @@ parseConfig' = do
 parseConfig :: [Lexer.Token] -> Either ParsingError Config
 parseConfig tokens =
   let Parser parse = parseConfig'
-      res = parse [] tokens
-   in fmap (reverse . snd3) res
+      res = parse (Config [] []) tokens
+   in fmap snd3 res

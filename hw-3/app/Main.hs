@@ -1,7 +1,7 @@
 module Main where
 
 import Lexer (tokenize)
-import Parser (parseConfig)
+import Parser (Config (..), parseConfig)
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
 import Xml (showConfig)
@@ -24,4 +24,7 @@ main = do
     Right config -> return config
     Left err -> putStrLn ("unable to parse:\n" <> show err) >> exitFailure
 
+  let Config _ logs = config
+
   writeFile target $ showConfig config
+  putStrLn $ unlines logs
