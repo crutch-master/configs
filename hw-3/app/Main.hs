@@ -1,6 +1,5 @@
 module Main where
 
-import Data.Maybe (fromMaybe)
 import Lexer (tokenize)
 import Parser (parseConfig)
 import Xml (showConfig, toXmlConfig)
@@ -15,7 +14,15 @@ config =
 
 main :: IO ()
 main = do
-  let tokens = fromMaybe [] $ tokenize config
-  case parseConfig tokens of
-    Just parsed -> putStrLn $ showConfig $ toXmlConfig parsed
-    _ -> print "not parsed!!!"
+  tokens <- case tokenize config of
+    Right ok -> return ok
+    Left err -> print err >> return []
+
+  parsed <- case parseConfig tokens of
+    Right ok -> return ok
+    Left err -> print err >> return []
+
+  let xmlConfig = toXmlConfig parsed
+      result = showConfig xmlConfig
+
+  putStrLn result

@@ -61,7 +61,7 @@ executable project
     main-is:          Main.hs
 
     -- Modules included in this executable, other than Main.
-    other-modules:    Lexer, Parser, Xml
+    other-modules:    Util, Lexer, Parser, Xml
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
