@@ -231,4 +231,4 @@ parseConfig :: [Lexer.Token] -> Either ParsingError Config
 parseConfig tokens =
   let Parser parse = parseConfig'
       res = parse [] tokens
-   in reverse . snd3 <$> res
+   in fmap (reverse . snd3) res
