@@ -1,11 +1,11 @@
-module Xml (XmlConfig (..), toXmlConfig, showConfig) where
+module Xml (XmlConfig (..), showConfig) where
 
-import Parser (Config, ConfigEntry (..), Value (..))
+import Parser (Config, Value (..))
 import Text.XML.Light (Node (..), ppElement, unode)
 
 newtype XmlValue = XmlValue Value
 
-newtype XmlConfig = XmlConfig [(String, Value)]
+newtype XmlConfig = XmlConfig Config
 
 instance Node XmlValue where
   node qn (XmlValue (Number num)) = node qn $ show num
@@ -16,15 +16,5 @@ instance Node XmlValue where
 instance Node XmlConfig where
   node qn (XmlConfig entries) = node qn $ map (\(key, value) -> unode key $ XmlValue value) entries
 
-toXmlConfig :: Config -> XmlConfig
-toXmlConfig =
-  XmlConfig
-    . foldr
-      ( \entry rest -> case entry of
-          Set pair -> pair : rest
-          _ -> rest
-      )
-      []
-
-showConfig :: XmlConfig -> String
-showConfig = ppElement . unode "config"
+showConfig :: Config -> String
+showConfig = ppElement . unode "config" . XmlConfig

@@ -2,15 +2,16 @@ module Main where
 
 import Lexer (tokenize)
 import Parser (parseConfig)
-import Xml (showConfig, toXmlConfig)
+import Xml (showConfig)
 
 config :: String
 config =
   "\
-  \set asdf = array(array(1,), {asdf: \"asd\", asdf2: array(),}, 2, 3)\n\
+  \set asdf = 3\n\
   \#= asdf asd aosjd adh \n\
   \ sdasfsf =#\n\
-  \set asdf2 = {asd: 5}"
+  \set asdf2 = ?[asdf 1 -]\n\
+  \set asdf3 = { asdf: ?[2 asdf print *] }"
 
 main :: IO ()
 main = do
@@ -22,7 +23,4 @@ main = do
     Right ok -> return ok
     Left err -> print err >> return []
 
-  let xmlConfig = toXmlConfig parsed
-      result = showConfig xmlConfig
-
-  putStrLn result
+  putStrLn $ showConfig parsed

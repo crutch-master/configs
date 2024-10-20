@@ -33,13 +33,13 @@ data Token
   | Multiply
   | Print
   | ExprEnd
-  | Comment String
   | Identifier String
   | Literal LiteralValue
   deriving (Show, Eq)
 
-newtype LexingError
+data LexingError
   = NoValidToken String
+  | UnclosedComment String
   deriving (Show)
 
 newtype Lexer = Lexer (String -> Either LexingError (Token, String))
@@ -50,7 +50,7 @@ instance Semigroup Lexer where
     _ -> right text
 
 instance Monoid Lexer where
-  mempty = Lexer $ \text -> Left $ NoValidToken text
+  mempty = Lexer $ Left . NoValidToken
 
 stripPrefix' :: String -> String -> Either LexingError String
 stripPrefix' pref text = maybeToEither (NoValidToken text) $ stripPrefix pref text
@@ -60,12 +60,6 @@ splitOnce' delim text = maybeToEither (NoValidToken text) $ splitOnce delim text
 
 lexSimple :: String -> Token -> Lexer
 lexSimple prefix token = Lexer $ stripPrefix' prefix >=> (\rest -> Right (token, rest))
-
-lexComment :: Lexer
-lexComment = Lexer $ \text -> do
-  rest <- stripPrefix' "#=" text
-  (comment, rest') <- splitOnce' "=#" rest
-  return (Comment comment, rest')
 
 lexIdentifier :: Lexer
 lexIdentifier = Lexer $ \text -> do
@@ -106,15 +100,24 @@ Lexer nextToken =
       lexSimple "*" Multiply,
       lexSimple "print" Print,
       lexSimple "]" ExprEnd,
-      lexComment,
       lexIdentifier,
       lexNumber,
       lexString
     ]
 
+stripAndDropComment :: String -> Either LexingError String
+stripAndDropComment text =
+  let stripped = dropWhile isSpace text
+   in case stripPrefix "#=" stripped of
+        Nothing -> Right stripped
+        Just rest -> case splitOnce "=#" rest of
+          Nothing -> Left $ UnclosedComment text
+          Just (_, rest') -> stripAndDropComment rest'
+
 tokenize :: String -> Either LexingError [Token]
 tokenize "" = Right []
 tokenize text = do
-  (token, rest) <- nextToken (dropWhile isSpace text)
+  stripped <- stripAndDropComment text
+  (token, rest) <- nextToken stripped
   tokens <- tokenize rest
   return (token : tokens)
