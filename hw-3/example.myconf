@@ -1,10 +1,18 @@
-set a = 1
-set b = ?[1 a +]
-set c = ?[a print b +]
-set d = array("this is a string")
-#= this is a comment =#
-set c = 5
-set e = {
-  d: d,
-  inner: { e: 5 }
-}
+#= Это комментарий =#
+set str = "Это строчный литерал"
+set num = 2 #= А это число =#
+
+#=
+В качестве значений можно использовать
+другие значения из конфига
+=#
+set clone = num #= clone будет равен 2 =#
+
+#=
+Помимо копирования значений, с ними можно выполнять
+выражения в постфиксной записи, например:
+=#
+set computed = ?[num clone * 1 +] #= computed будет равен 5 =#
+
+set arr = array(1, num, 3)  #= Это массив =#
+set dict = { key: str } #= А это словарь =#

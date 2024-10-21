@@ -1,17 +1,14 @@
 <config>
-  <a>1</a>
-  <b>2</b>
-  <c>3</c>
-  <d>
-    <entry>this is a string</entry>
-  </d>
-  <c>5</c>
-  <e>
-    <d>
-      <entry>this is a string</entry>
-    </d>
-    <inner>
-      <e>5</e>
-    </inner>
-  </e>
+  <str>Это строчный литерал</str>
+  <num>2</num>
+  <clone>2</clone>
+  <computed>5</computed>
+  <arr>
+    <entry>1</entry>
+    <entry>2</entry>
+    <entry>3</entry>
+  </arr>
+  <dict>
+    <key>Это строчный литерал</key>
+  </dict>
 </config>

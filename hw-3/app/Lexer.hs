@@ -40,7 +40,7 @@ data Token
 data LexingError
   = NoValidToken String
   | UnclosedComment String
-  deriving (Show)
+  deriving (Show, Eq)
 
 newtype Lexer = Lexer (String -> Either LexingError (Token, String))
 
@@ -115,9 +115,11 @@ stripAndDropComment text =
           Just (_, rest') -> stripAndDropComment rest'
 
 tokenize :: String -> Either LexingError [Token]
-tokenize "" = Right []
-tokenize text = do
-  stripped <- stripAndDropComment text
-  (token, rest) <- nextToken stripped
-  tokens <- tokenize rest
-  return (token : tokens)
+tokenize text = case stripAndDropComment text of
+  Left err -> Left err
+  Right val -> case val of
+    "" -> Right []
+    _ -> do
+      (token, rest) <- nextToken val
+      tokens <- tokenize rest
+      return (token : tokens)

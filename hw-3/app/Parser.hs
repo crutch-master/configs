@@ -35,11 +35,11 @@ data ParsingErrorDetails
   | UnexpectedEnd
   | InvalidExpression
   | KeyNotFound String
-  deriving (Show)
+  deriving (Show, Eq)
 
-data ParsingError = ParsingError {pos :: Integer, details :: ParsingErrorDetails} deriving (Show)
+data ParsingError = ParsingError {pos :: Integer, details :: ParsingErrorDetails} deriving (Show, Eq)
 
-data Config = Config [(String, Value)] [String]
+data Config = Config [(String, Value)] [String] deriving (Show, Eq)
 
 newtype Parser a = Parser (Config -> [Lexer.Token] -> Either ParsingError (a, Config, [Lexer.Token]))
 

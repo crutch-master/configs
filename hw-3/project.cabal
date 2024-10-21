@@ -53,7 +53,7 @@ extra-doc-files:    README.md
 common warnings
     ghc-options: -Wall
 
-executable project
+executable my-conf-lang
     -- Import common warning flags.
     import:           warnings
 
@@ -76,3 +76,16 @@ executable project
 
     -- Base language which the package is written in.
     default-language: Haskell2010
+
+test-suite my-conf-lang-tests
+    build-depends:    base ^>=4.17.2.1,
+                      regex-tdfa ^>= 1.3.2.2,
+                      xml ^>= 1.3.14,
+                      hspec ^>= 2.11.9
+
+    type:             exitcode-stdio-1.0
+
+    other-modules:    Util, Lexer, Parser, Xml
+
+    main-is:          Test.hs
+    hs-source-dirs:   test, app
