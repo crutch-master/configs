@@ -4,6 +4,7 @@ pub struct BitWriter<'a, T: Write> {
     stream: &'a mut T,
     byte: u8,
     index: u8,
+    byte_log: Vec<u8>,
 }
 
 impl<'a, T: Write> BitWriter<'a, T> {
@@ -12,6 +13,7 @@ impl<'a, T: Write> BitWriter<'a, T> {
             stream,
             byte: 0,
             index: 0,
+            byte_log: Vec::new(),
         }
     }
 
@@ -23,6 +25,7 @@ impl<'a, T: Write> BitWriter<'a, T> {
         self.index += 1;
 
         if self.index >= 8 {
+            self.byte_log.push(self.byte);
             self.stream.write(&[self.byte])?;
             self.byte = 0;
             self.index %= 8;
@@ -44,9 +47,16 @@ impl<'a, T: Write> BitWriter<'a, T> {
             return Ok(());
         }
 
+        self.byte_log.push(self.byte);
         self.stream.write(&[self.byte])?;
         self.byte = 0;
         self.index = 0;
         Ok(())
+    }
+
+    pub fn pop_byte_log(&mut self) -> Vec<u8> {
+        let clone = self.byte_log.clone();
+        self.byte_log.clear();
+        clone
     }
 }

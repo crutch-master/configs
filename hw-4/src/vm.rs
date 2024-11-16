@@ -1,9 +1,9 @@
 use crate::bit_reader::BitReader;
-use std::io::{self, Read};
+use std::{io::{self, Read}, fmt::{Display, Formatter}, error::Error};
 
 pub struct Vm {
-    stack: Vec<u16>,
-    heap: [u16; 512],
+    pub stack: Vec<u16>,
+    pub heap: [u16; 512],
 }
 
 #[derive(Debug)]
@@ -18,6 +18,14 @@ impl From<io::Error> for ExecErr {
         Self::IoError(err)
     }
 }
+
+impl Display for ExecErr {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl Error for ExecErr { }
 
 impl Vm {
     pub fn new() -> Self {
