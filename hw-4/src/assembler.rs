@@ -6,7 +6,7 @@ pub enum Command {
     Push(u16),
     Read(u16),
     Write(u16),
-    Pop,
+    Popcnt,
 }
 
 fn parse_single(line: &str) -> Option<Command> {
@@ -14,7 +14,7 @@ fn parse_single(line: &str) -> Option<Command> {
         ["PUSH", val] => Some(Command::Push(val.parse::<u16>().ok()?)),
         ["READ", addr] => Some(Command::Read(addr.parse::<u16>().ok()?)),
         ["WRITE", addr] => Some(Command::Write(addr.parse::<u16>().ok()?)),
-        ["POP"] => Some(Command::Pop),
+        ["POPCNT"] => Some(Command::Popcnt),
         _ => None,
     }
 }
@@ -53,7 +53,7 @@ fn write_command<'a, T: Write>(writer: &mut BitWriter<'a, T>, command: &Command)
             writer.write_bits(*addr as u64, 10)?;
             writer.write_bits(0, 1)?;
         }
-        Command::Pop => {
+        Command::Popcnt => {
             writer.write_bits(17, 5)?;
             writer.write_bits(0, 3)?;
         }

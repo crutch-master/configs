@@ -57,13 +57,20 @@ impl Vm {
                 let addr = from.read_bits(10).map_err(ExecErr::from)?;
                 from.read_bits(1).map_err(ExecErr::from)?;
 
-                self.heap[addr as usize] = *self.stack.last().ok_or(ExecErr::EmptyStack)?;
+                self.heap[addr as usize] = self.stack.pop().ok_or(ExecErr::EmptyStack)?;
                 Ok(())
             }
             17 => {
                 from.read_bits(3).map_err(ExecErr::from)?;
 
-                self.stack.pop().ok_or(ExecErr::EmptyStack)?;
+                let top = self.stack.pop().ok_or(ExecErr::EmptyStack)?;
+                let mut cnt = 0;
+
+                for i in 0..16 {
+                    cnt += (top >> i) & 1;
+                }
+
+                self.stack.push(cnt);
                 Ok(())
             }
             _ => Err(ExecErr::UnknownCommand),
