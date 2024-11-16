@@ -1,5 +1,9 @@
 use crate::bit_reader::BitReader;
-use std::{io::{self, Read}, fmt::{Display, Formatter}, error::Error};
+use std::{
+    error::Error,
+    fmt::{Display, Formatter},
+    io::{self, Read},
+};
 
 pub struct Vm {
     pub stack: Vec<u16>,
@@ -25,7 +29,7 @@ impl Display for ExecErr {
     }
 }
 
-impl Error for ExecErr { }
+impl Error for ExecErr {}
 
 impl Vm {
     pub fn new() -> Self {

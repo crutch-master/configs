@@ -3,7 +3,10 @@ mod bit_reader;
 mod bit_writer;
 mod vm;
 
-use crate::{assembler::{parse, write}, vm::Vm};
+use crate::{
+    assembler::{parse, write},
+    vm::Vm,
+};
 use serde_json::to_string;
 use std::{env::args, fs, io};
 
@@ -37,35 +40,35 @@ fn interpret(binary_file: &str, out_file: &str) -> Result<(), Box<dyn std::error
     Ok(())
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let action = args()
         .nth(1)
-        .expect("expected first argument to be the action");
+        .ok_or("expected first argument to be the action")?;
 
     match action.as_str() {
         "assemble" => {
             let source_file = args()
                 .nth(2)
-                .expect("expected second argument to be the source file");
+                .ok_or("expected second argument to be the source file")?;
             let dest_file = args()
                 .nth(3)
-                .expect("expected third argument to be the destination file");
+                .ok_or("expected third argument to be the destination file")?;
             let log_file = args()
                 .nth(4)
-                .expect("expected fourth argument to be the logs file");
+                .ok_or("expected fourth argument to be the logs file")?;
 
-            assemble(&source_file, &dest_file, &log_file).unwrap()
+            assemble(&source_file, &dest_file, &log_file)
         }
         "interpret" => {
             let binary_file = args()
                 .nth(2)
-                .expect("expected second argument to be the binary file");
+                .ok_or("expected second argument to be the binary file")?;
             let out_file = args()
                 .nth(3)
-                .expect("expected third argument to be the result file");
+                .ok_or("expected third argument to be the result file")?;
 
-            interpret(&binary_file, &out_file).unwrap()
+            interpret(&binary_file, &out_file)
         }
-        _ => panic!("first argument should either be 'assemble' or 'interpret'"),
+        _ => Err("first argument should either be 'assemble' or 'interpret'".into()),
     }
 }
