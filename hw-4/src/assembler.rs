@@ -74,3 +74,40 @@ pub fn write<T: Write>(writer: &mut T, commands: &[Command]) -> io::Result<Vec<(
 
     Ok(log)
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    fn cmd_to_hex(command: &Command) -> io::Result<String> {
+        let mut buffer = Vec::new();
+        let mut writer = BitWriter::new(&mut buffer);
+        write_command(&mut writer, command)?;
+
+        Ok(buffer
+            .iter()
+            .map(|byte| format!("{:02X}", byte))
+            .collect::<Vec<_>>()
+            .join(""))
+    }
+
+    #[test]
+    fn push() {
+        assert_eq!(cmd_to_hex(&Command::Push(711)).unwrap(), "E75800");
+    }
+
+    #[test]
+    fn read() {
+        assert_eq!(cmd_to_hex(&Command::Read(146)).unwrap(), "5712");
+    }
+
+    #[test]
+    fn write() {
+        assert_eq!(cmd_to_hex(&Command::Write(140)).unwrap(), "9811");
+    }
+
+    #[test]
+    fn popcnt() {
+        assert_eq!(cmd_to_hex(&Command::Popcnt).unwrap(), "11");
+    }
+}
